@@ -26,7 +26,7 @@ mode_descriptions = {
         "MCP를 도구로 활용하는 Agent를 이용합니다."
     ],
     "이미지 분석": [
-        "이미지를 업로드하면 이미지의 내용을 요약할 수 있습니다."
+        "이미지를 선택하여 멀티모달을 이용하여 분석합니다."
     ]
 }
 
@@ -59,7 +59,7 @@ with st.sidebar:
     uploaded_file = None
     if mode=='이미지 분석':
         st.subheader("🌇 이미지 업로드")
-        uploaded_file = st.file_uploader("이미지 요약을 위한 파일을 선택합니다.", type=["png", "jpg", "jpeg"])
+        uploaded_file = st.file_uploader("이미지 분석을 위한 파일을 선택합니다.", type=["png", "jpg", "jpeg"])
 
     chat.update(modelName, debugMode)
 
