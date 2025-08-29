@@ -1,0 +1,24 @@
+# Streamlit for web UI
+streamlit
+streamlit-chat
+
+# AWS SDK
+boto3
+aioboto3
+
+# Strands Agent framework
+strands-agents 
+strands-agents-tools
+
+# MCP (Model Context Protocol) support
+mcp
+
+# Code execution tools
+langchain_experimental
+
+# Graphviz
+graphviz
+
+langchain_aws
+langchain
+langchain_community
