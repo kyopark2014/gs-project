@@ -9,11 +9,9 @@ import chat
 import info
 import contextlib
 
-from typing import Dict, List, Optional
 from strands import Agent
 from strands.models import BedrockModel
 from botocore.config import Config
-from strands_tools import memory, retrieve
 from strands.agent.conversation_manager import SlidingWindowConversationManager
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
