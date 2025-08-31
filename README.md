@@ -188,7 +188,7 @@ Amazon S3에 아래와 같이 파일을 업로드합니다.
 
 ### Notion MCP
 
-Notion에서는 [Official Notion MCP Server](https://github.com/makenotion/notion-mcp-server)와 같은 MCP 서버를 제공하고 있습니다. 아래 방식으로 token을 부여잡고 mcp.json 파일을 설정합니다.
+Notion에서는 [Official Notion MCP Server](https://github.com/makenotion/notion-mcp-server)와 같은 MCP 서버를 제공하고 있습니다. 아래 방식으로 token을 생성한 후에, mcp.json에 관련정보를 설정한 후 agent에서 활용합니다.
 
 1) [Notion API Integration](https://www.notion.so/profile/integrations)에 접속하여 [새 API 통합]을 선택합니다.
 2) 아래와 같이 입력후 저장합니다.
