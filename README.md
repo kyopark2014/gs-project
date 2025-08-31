@@ -214,5 +214,45 @@ streamlit run application/app.py
 
 죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
 
+## Notion MCP
+
+1) [Notion API Integration](https://www.notion.so/profile/integrations)에 접속하여 [새 API 통합]을 선택합니다.
+2) 아래와 같이 입력후 저장합니다.
+
+<img width="573" height="535" alt="image" src="https://github.com/user-attachments/assets/787561ad-0b61-4a1a-91ea-72d7556e6358" />
+
+3) API Secret를 복사합니다. 
+
+4) 사용권한 Tab에서 적절한 페이지를 선택합니다.
+
+<img width="664" height="340" alt="image" src="https://github.com/user-attachments/assets/872e7054-1135-4dde-aa6a-756a7ad928b0" />
+
+5) mcp.json을 아래와 같이 편집합니다.
+```python
+"mcpServers": {
+    "notionApi": {
+        "command": "npx",
+        "args": ["-y", "@notionhq/notion-mcp-server"],
+        "env": {
+            "NOTION_TOKEN": token
+        }
+    }
+}
+```
+
+이후 아래와 같이 Notion 문서를 조회할 수 있습니다.
+
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/17ace844-9d15-4419-b3fa-5df4a41f8f7d" />
+
+
 ### 실행 결과
 
+## Reference
+
+[Hosting a local MCP server](https://developers.notion.com/docs/hosting-open-source-mcp)
+
+[Official Notion MCP Server](https://github.com/makenotion/notion-mcp-server)
+
+[Common MCP clients](https://developers.notion.com/docs/common-mcp-clients)
+
+[Notion API Integration](https://www.notion.so/profile/integrations)
