@@ -182,38 +182,6 @@ Amazon S3에 아래와 같이 파일을 업로드합니다.
 
 <img width="600" alt="noname" src="https://github.com/user-attachments/assets/efd6aa45-2bc4-43b4-8fcb-d53252c09cce" />
 
-### Strands Agent의 활용
-
-Strands agent는 multi-step reasoning을 통해 향상된 RAG 검색을 가능하게 해줍니다. 이를 활용하기 위해 먼저 아래와 같이 git으로 부터 소스를 가져옵니다.
-
-```text
-git clone https://github.com/kyopark2014/GS-project
-```
-
-"application" 폴더의 [config.json](./application/config.json)을 선택한 후에 아래와 같이 knowledge_base_id를 업데이트 합니다. knowledge_base_id은 생성한 Knowledge Base의 ID입니다.
-
-```java
-{
-    "projectName":"GS-project",
-    "region":"us-west-2",
-    "knowledge_base_id":"O2IGZXMQXO"
- }
-```
-
-이제 필요한 패키지를 설치합니다.
-
-```text
-pip install streamlit streamlit-chat boto3 asyncio strands-agents strands-agents-tools mcp langchain_experimental graphviz matplotlib
-```
-
-이후 아래와 같이 streamlit을 실행합니다.
-
-```text
-streamlit run application/app.py
-```
-
-죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
-
 ### Notion MCP
 
 Notion에서는 [Official Notion MCP Server](https://github.com/makenotion/notion-mcp-server)와 같은 MCP 서버를 제공하고 있습니다. 아래 방식으로 token을 부여잡고 mcp.json 파일을 설정합니다.
@@ -245,6 +213,69 @@ Notion에서는 [Official Notion MCP Server](https://github.com/makenotion/notio
 이후 아래와 같이 Notion 문서를 조회할 수 있습니다.
 
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/17ace844-9d15-4419-b3fa-5df4a41f8f7d" />
+
+
+### Strands Agent의 활용
+
+Strands agent는 multi-step reasoning을 통해 향상된 RAG 검색을 가능하게 해줍니다. 이를 활용하기 위해 먼저 아래와 같이 git으로 부터 소스를 가져옵니다.
+
+```text
+git clone https://github.com/kyopark2014/GS-project
+```
+
+"application" 폴더의 [config.json](./application/config.json)을 선택한 후에 아래와 같이 knowledge_base_id를 업데이트 합니다. knowledge_base_id은 생성한 Knowledge Base의 ID입니다.
+
+```java
+{
+    "projectName":"GS-project",
+    "region":"us-west-2",
+    "knowledge_base_id":"O2IGZXMQXO"
+ }
+```
+
+이제 필요한 패키지를 설치합니다.
+
+```text
+pip install streamlit streamlit-chat boto3 asyncio strands-agents strands-agents-tools mcp langchain_experimental graphviz matplotlib
+```
+
+[application/mcp.json.sample](./application/mcp.json.sample) 파일을 아래와 같이 복사해서 mcp.json 파일을 생성합니다.
+
+```text
+cp application/mcp.json.sample application/mcp.json
+```
+
+이제 mcp.json 파일을 열어서 아래의 NOTION_TOKEN를 업데이트 합니다.
+
+```java
+{
+    "mcpServers": {
+        "knowledge_base": {
+            "command": "python",
+            "args": ["application/mcp_server_retrieve.py"]
+        },
+        "repl_coder": {
+            "command": "python",
+            "args": ["application/mcp_server_repl_coder.py"]
+        },
+        "notionApi": {
+            "command": "npx",
+            "args": ["-y", "@notionhq/notion-mcp-server"],
+            "env": {
+                "NOTION_TOKEN": "ntn_Token 입력이 필요합니다."
+            }
+        }
+    }
+}
+```
+
+이후 아래와 같이 streamlit을 실행합니다.
+
+```text
+streamlit run application/app.py
+```
+
+죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
 
 
 ### 실행 결과
