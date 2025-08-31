@@ -214,7 +214,9 @@ streamlit run application/app.py
 
 죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
 
-## Notion MCP
+### Notion MCP
+
+Notion에서는 [Official Notion MCP Server](https://github.com/makenotion/notion-mcp-server)와 같은 MCP 서버를 제공하고 있습니다. 아래 방식으로 token을 부여잡고 mcp.json 파일을 설정합니다.
 
 1) [Notion API Integration](https://www.notion.so/profile/integrations)에 접속하여 [새 API 통합]을 선택합니다.
 2) 아래와 같이 입력후 저장합니다.
