@@ -28,7 +28,8 @@ logging.basicConfig(
 logger = logging.getLogger("chat")
 
 debug_mode = False
-def update(modelName, debugMode):
+mcp_servers = []
+def update(modelName, debugMode, mcpServers):
     global model_name, models, model_type, model_id, debug_mode
 
     if modelName is not model_name:
@@ -44,6 +45,10 @@ def update(modelName, debugMode):
     if debugMode is not debug_mode:
         debug_mode = debugMode
         logger.info(f"debug_mode: {debug_mode}")
+
+    if mcpServers is not mcp_servers:
+        mcp_servers = mcpServers
+        logger.info(f"mcp_servers: {mcp_servers}")
 
 def summary_image(img_base64, instruction):      
     llm = get_chat(extended_thinking=reasoning_mode)

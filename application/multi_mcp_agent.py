@@ -128,17 +128,19 @@ conversation_manager = SlidingWindowConversationManager(
     window_size=10,  
 )
 agent = None
-knowledge_base_mcp_client = repl_coder_client = None
+knowledge_base_client = repl_coder_client = notion_client = None
 
 def initialize_agent():
     """Initialize the global agent with MCP client"""
-    knowledge_base_mcp_client = create_mcp_client("knowledge_base")
+    knowledge_base_client = create_mcp_client("knowledge_base")
     repl_coder_client = create_mcp_client("repl_coder")
+    notion_client = create_mcp_client("notionApi")
         
     # Create agent within MCP client context manager
-    with knowledge_base_mcp_client, repl_coder_client:
-        mcp_tools = knowledge_base_mcp_client.list_tools_sync()
+    with knowledge_base_client, repl_coder_client, notion_client:
+        mcp_tools = knowledge_base_client.list_tools_sync()
         mcp_tools.extend(repl_coder_client.list_tools_sync())
+        mcp_tools.extend(notion_client.list_tools_sync())
         logger.info(f"mcp_tools: {mcp_tools}")
         
         tools = []
@@ -148,7 +150,7 @@ def initialize_agent():
         logger.info(f"tools loaded: {tool_list}")
     
         system_prompt = (
-            "당신의 이름은 현민이고, 질문에 대해 친절하게 답변하는 사려깊은 인공지능 도우미입니다."
+            "당신의 이름은 지민이고, 질문에 대해 친절하게 답변하는 사려깊은 인공지능 도우미입니다."
             "상황에 맞는 구체적인 세부 정보를 충분히 제공합니다." 
             "모르는 질문을 받으면 솔직히 모른다고 말합니다."
         )
@@ -161,7 +163,7 @@ def initialize_agent():
             conversation_manager=conversation_manager
         )
     
-    return agent, knowledge_base_mcp_client, repl_coder_client, tool_list
+    return agent, knowledge_base_client, repl_coder_client, notion_client, tool_list
 
 def get_tool_info(tool_name, tool_content):
     tool_references = []    
@@ -372,9 +374,9 @@ def create_mcp_client(mcp_server_name: str):
     return mcp_client
 
 tool_list = None
-async def run_agent(query: str, containers):
+async def run_agent(query: str, mcp_servers: list, containers):
     global index, status_msg
-    global agent, knowledge_base_mcp_client, repl_coder_client, tool_list
+    global agent, knowledge_base_client, repl_coder_client, notion_client, tool_list
     index = 0
     status_msg = []
     
@@ -382,12 +384,12 @@ async def run_agent(query: str, containers):
 
     # Initialize agent if not exists
     if agent is None:
-        agent, knowledge_base_mcp_client, repl_coder_client, tool_list = initialize_agent()
+        agent, knowledge_base_client, repl_coder_client, notion_client, tool_list = initialize_agent()
 
     if chat.debug_mode and containers is not None and tool_list:
         containers['tools'].info(f"tool_list: {tool_list}")
     
-    with knowledge_base_mcp_client, repl_coder_client as client:
+    with knowledge_base_client, repl_coder_client, notion_client:
         agent_stream = agent.stream_async(query)
         result, image_url = await show_streams(agent_stream, containers)
 

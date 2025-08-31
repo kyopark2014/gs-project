@@ -38,18 +38,29 @@ with st.sidebar:
     )
 
     st.subheader("🐱 대화 형태")
-    
+
     # radio selection
     mode = st.radio(
         label="원하는 대화 형태를 선택하세요. ",options=["GS Agent", "이미지 분석"], index=0
     )   
     st.info(mode_descriptions[mode][0])
+
+    mcp_options = [
+        "RAG", "Notion", "Code Interpreter"
+    ]
+    mcp_selections = {}
+    default_selections = ["RAG"]
+
+    with st.expander("MCP 옵션 선택", expanded=True):  
+        for option in mcp_options:
+            default_value = option in default_selections
+            mcp_selections[option] = st.checkbox(option, key=f"mcp_{option}", value=default_value)
     
     # model selection box
     modelName = st.selectbox(
         '🖊️ 사용 모델을 선택하세요',
         ('Claude 4 Sonnet', 'Claude 3.7 Sonnet', 'Claude 3.5 Sonnet', 'Claude 3.0 Sonnet'), index=1
-    )
+    )    
 
     # debug checkbox
     select_debugMode = st.checkbox('Debug Mode', value=True)
@@ -60,7 +71,10 @@ with st.sidebar:
         st.subheader("🌇 이미지 업로드")
         uploaded_file = st.file_uploader("이미지 분석을 위한 파일을 선택합니다.", type=["png", "jpg", "jpeg"])
 
-    chat.update(modelName, debugMode)
+    mcpServers = [server for server, is_selected in mcp_selections.items() if is_selected]
+    logger.info(f"mcpServers: {mcpServers}")
+
+    chat.update(modelName, debugMode, mcpServers)
 
     st.success(f"Connected to {modelName}", icon="💚")
     clear_button = st.button("대화 초기화", key="clear")
@@ -157,7 +171,6 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                     st.session_state.messages.append({"role": "assistant", "content": summary})
                     response = summary
 
-            logger.info(f"image_url type: {type(image_url)}, value: {image_url}")
             assistant_message = {
                 "role": "assistant", 
                 "content": response,
@@ -166,39 +179,7 @@ if prompt := st.chat_input("메시지를 입력하세요."):
             st.session_state.messages.append(assistant_message)
             
             if image_url:
-                if isinstance(image_url, list):
-                    valid_image_urls = [url for url in image_url if url and url.strip()]
-                    if not valid_image_urls:
-                        logger.info("유효한 이미지 URL이 없습니다.")
-                        image_url = None
-                    else:
-                        image_url = valid_image_urls
-                elif not image_url or not image_url.strip():
-                    logger.info("유효한 이미지 URL이 없습니다.")
-                    image_url = None
-                
-                if image_url:
-                    logger.info(f"이미지 표시 시작: {image_url}")
-                    if isinstance(image_url, list):
-                        logger.info(f"이미지 리스트 길이: {len(image_url)}")
-                        for i, url in enumerate(image_url):
-                            logger.info(f"이미지 {i+1} URL: {url}")
-                            try:
-                                file_name = url[url.rfind('/')+1:] if '/' in url else url
-                                st.image(url, caption=file_name, use_container_width=True)
-                                logger.info(f"이미지 {i+1} 표시 성공")
-                            except Exception as e:
-                                logger.error(f"이미지 {i+1} 표시 오류: {e}")
-                                st.error(f"이미지를 표시할 수 없습니다: {url}")
-                    else:
-                        logger.info(f"단일 이미지 URL: {image_url}")
-                        try:
-                            file_name = image_url[image_url.rfind('/')+1:] if '/' in image_url else image_url
-                            st.image(image_url, caption=file_name, use_container_width=True)
-                            logger.info("단일 이미지 표시 성공")
-                        except Exception as e:
-                            logger.error(f"단일 이미지 표시 오류: {e}")
-                            st.error(f"이미지를 표시할 수 없습니다: {image_url}")
-            else:
-                logger.info("표시할 이미지가 없습니다.")
-            
+                for url in image_url:
+                    logger.info(f"url: {url}")
+                    file_name = url[url.rfind('/')+1:]
+                    st.image(url, caption=file_name, use_container_width=True)
