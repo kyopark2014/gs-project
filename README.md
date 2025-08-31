@@ -264,7 +264,8 @@ streamlit run application/app.py
 
 아래와 같이 Notion 문서를 조회할 수 있습니다.
 
-<img width="700" alt="image" src="https://github.com/user-attachments/assets/17ace844-9d15-4419-b3fa-5df4a41f8f7d" />
+<img width="729" height="738" alt="image" src="https://github.com/user-attachments/assets/30c85b2b-29a5-4475-b12d-a817965a296c" />
+
 
 ## Reference
 
