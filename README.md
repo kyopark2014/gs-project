@@ -1,6 +1,6 @@
 # GS Project
 
-여기서는 Streamlit과 Knowledge Base를 이용하여 strands agent 기반의 chatbot을 구현합니다. 전체적인 architecture는 아래와 같습니다. MCP server로 Knowledge Base, Code Interpreter를 이용하고 strands agent를 이용해 관련된 문서를 조회하여 답변을 구하고 필요하다면 다이어그램을 그래서 이해를 돕습니다. 여기서 생성된 agent는 streamlit을 이용해 UI를 제공하고 ALB와 CloudFront를 이용하여 안전하게 활용할 수 있습니다.
+여기서는 Strands SDK 기반의 chatbot을 이용해 RAG (Knowledge Base), Notion, Code Interpreter를 MCP를 활용하는 것을 설명합니다. 전체적인 architecture는 아래와 같습니다. Knowledge Base를 이용해 사내의 중요한 문서를 열람하고, Notion으로 정리된 각종 메뉴얼을 참고합니다. 또한, Code Interpreter를 이용해 복잡한 데이터를 분석하고 필요시 다이어그램을 그래서 이해를 돕습니다. 여기서 생성된 agent는 streamlit을 이용해 UI를 제공하고 ALB와 CloudFront를 이용하여 안전하게 활용할 수 있습니다.
 
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/7adb7458-185c-4b38-b9bd-e3639eaa6c9d" />
 
