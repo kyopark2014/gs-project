@@ -197,23 +197,6 @@ Notion에서는 [Official Notion MCP Server](https://github.com/makenotion/notio
 
 <img width="664" height="340" alt="image" src="https://github.com/user-attachments/assets/872e7054-1135-4dde-aa6a-756a7ad928b0" />
 
-5) mcp.json을 아래와 같이 편집합니다.
-```python
-"mcpServers": {
-    "notionApi": {
-        "command": "npx",
-        "args": ["-y", "@notionhq/notion-mcp-server"],
-        "env": {
-            "NOTION_TOKEN": token
-        }
-    }
-}
-```
-
-이후 아래와 같이 Notion 문서를 조회할 수 있습니다.
-
-<img width="700" alt="image" src="https://github.com/user-attachments/assets/17ace844-9d15-4419-b3fa-5df4a41f8f7d" />
-
 
 ### Strands Agent의 활용
 
@@ -277,8 +260,11 @@ streamlit run application/app.py
 
 죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
 
-
 ### 실행 결과
+
+아래와 같이 Notion 문서를 조회할 수 있습니다.
+
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/17ace844-9d15-4419-b3fa-5df4a41f8f7d" />
 
 ## Reference
 
