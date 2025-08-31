@@ -260,11 +260,18 @@ streamlit run application/app.py
 
 죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
 
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/9d7acc2d-d951-44e1-9bd7-3f10c7720fa4" />
+
+
 ### 실행 결과
 
 아래와 같이 Notion 문서를 조회할 수 있습니다.
 
-<img width="729" height="738" alt="image" src="https://github.com/user-attachments/assets/30c85b2b-29a5-4475-b12d-a817965a296c" />
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/30c85b2b-29a5-4475-b12d-a817965a296c" />
+
+Code Interpreter MCP를 이용해 아래와 같이 그래프를 그릴 수 있습니다.
+
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/f3fad29e-92d2-41e4-9888-651085bbfc17" />
 
 
 ## Reference
