@@ -12,16 +12,20 @@
 
 ```python
 async def run_agent(query: str, containers):
-    global index, status_msg
-    global agent, mcp_client, tool_list
+    active_clients = []
+    if knowledge_base_client:
+        active_clients.append(knowledge_base_client)
+    if repl_coder_client:
+        active_clients.append(repl_coder_client)
+    if notion_client:
+        active_clients.append(notion_client)
     
-    if agent is None:
-        agent, mcp_client, tool_list = initialize_agent()
-
-    with mcp_client as client:
+    with contextlib.ExitStack() as stack:
+        for client in active_clients:
+            stack.enter_context(client)        
         agent_stream = agent.stream_async(query)
-        result = await show_streams(agent_stream, containers)
-    return result
+        result, image_url = await show_streams(agent_stream, containers)
+    return result, image_url
 ```
 
 [mcp.json](./application/mcp.json)에서는 MCP 서버에 대한 정보를 가지고 있습니다. 이 정보를 이용하여 MCPClient를 생성할 수 있습니다. mcp.json의 MCP 서버의 정보인 command, args, env를 이용해 [StdioServerParameters](https://github.com/strands-agents/sdk-python?tab=readme-ov-file#mcp-support)를 구성합니다.
