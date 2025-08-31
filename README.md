@@ -270,7 +270,7 @@ streamlit run application/app.py
 
 MCP를 이용하면 Notion 문서를 손쉽게 조회할 수 있습니다. 먼저 Notion에 아래와 같은 AgentCore에 대한 설명 자료를 추가하였습니다.
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/45a24010-4699-496b-ad6d-dc7e0978838e" />
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/4852e7f6-2e87-4e74-af04-a42557c7ab41" />
 
 이후 아래와 같이 Notion의 문서를 조회할 수 있습니다.
 
