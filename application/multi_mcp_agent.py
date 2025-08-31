@@ -6,6 +6,7 @@ import utils
 import boto3
 import re
 import chat
+import info
 
 from typing import Dict, List, Optional
 from strands import Agent
@@ -49,12 +50,21 @@ def get_status_msg(status):
         status = " -> ".join(status_msg)
         return "[status]\n" + status
 
-model_id = "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 aws_region = utils.bedrock_region
 
 def get_model():
     STOP_SEQUENCE = "\n\nHuman:" 
     maxOutputTokens = 4096 # 4k
+
+    # Get model info from chat.py
+    models = info.get_model_info(chat.model_name)
+    model_info = models[0]
+    model_id = model_info['model_id']
+    
+    # Use region from config.json
+    bedrock_region = utils.bedrock_region
+
+    logger.info(f"Using model_id: {model_id}, region: {bedrock_region} (from config.json)")
 
     # Bedrock client configuration
     bedrock_config = Config(
@@ -65,13 +75,14 @@ def get_model():
     
     bedrock_client = boto3.client(
         'bedrock-runtime',
-        region_name=aws_region,
+        region_name=bedrock_region,
         config=bedrock_config
     )
 
     model = BedrockModel(
         client=bedrock_client,
-        model_id=chat.model_id,
+        model_id=model_id,
+        region_name=bedrock_region,  # Explicitly set region for BedrockModel
         max_tokens=maxOutputTokens,
         stop_sequences = [STOP_SEQUENCE],
         temperature = 0.1,

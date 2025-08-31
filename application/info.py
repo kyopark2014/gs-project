@@ -1,21 +1,3 @@
-claude_4_opus_models = [   # Opus 4
-    {
-        "bedrock_region": "us-west-2", # Oregon
-        "model_type": "claude",
-        "model_id": "us.anthropic.claude-opus-4-20250514-v1:0"
-    },
-    {
-        "bedrock_region": "us-east-1", # N.Virginia
-        "model_type": "claude",
-        "model_id": "us.anthropic.claude-4-opus-20250514-v1:0"
-    },
-    {
-        "bedrock_region": "us-east-2", # Ohio
-        "model_type": "claude",
-        "model_id": "us.anthropic.claude-4-opus-20250514-v1:0"
-    }
-]
-
 claude_4_sonnet_models = [   # Sonnet 4
     {
         "bedrock_region": "ap-northeast-2", 

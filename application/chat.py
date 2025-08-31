@@ -4,6 +4,7 @@ import info
 import base64
 import traceback
 import boto3
+import utils
 from botocore.config import Config
 
 from langchain_core.messages import HumanMessage
@@ -134,7 +135,8 @@ def get_chat(extended_thinking):
     profile = models[selected_chat]
     # print('profile: ', profile)
         
-    bedrock_region =  profile['bedrock_region']
+    # Use region from config.json
+    bedrock_region = utils.bedrock_region
     modelId = profile['model_id']
     model_type = profile['model_type']
     if model_type == 'claude':
@@ -142,7 +144,7 @@ def get_chat(extended_thinking):
     else:
         maxOutputTokens = 5120 # 5k
 
-    logger.info(f"LLM: {selected_chat}, bedrock_region: {bedrock_region}, modelId: {modelId}, model_type: {model_type}")
+    logger.info(f"LLM: {selected_chat}, bedrock_region: {bedrock_region} (from config.json), modelId: {modelId}, model_type: {model_type}")
 
     if profile['model_type'] == 'nova':
         STOP_SEQUENCE = '"\n\n<thinking>", "\n<thinking>", " <thinking>"'

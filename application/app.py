@@ -2,7 +2,6 @@ import streamlit as st
 import logging
 import sys
 import os
-import agent
 import chat
 import asyncio
 import multi_mcp_agent
@@ -63,11 +62,6 @@ with st.sidebar:
 
     chat.update(modelName, debugMode)
 
-    # selecttion of single or multi mcp agent
-    mcp_agent_mode = st.radio(
-        label="MCP Agent 동작방식을 선택하세요. ",options=["Single", "Multiple"], index=1
-    )
-
     st.success(f"Connected to {modelName}", icon="💚")
     clear_button = st.button("대화 초기화", key="clear")
 
@@ -103,23 +97,13 @@ def display_chat_messages() -> None:
     @returns None
     """
     for i, message in enumerate(st.session_state.messages):
-        logger.info(f"메시지 {i+1} 표시: role={message['role']}, images={message.get('images', [])}")
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
             if "images" in message and message["images"]:
-                logger.info(f"메시지 {i+1}에서 이미지 {len(message['images'])}개 발견")
                 for j, url in enumerate(message["images"]):
-                    logger.info(f"메시지 {i+1} 이미지 {j+1} URL: {url}")
-                    try:
-                        file_name = url[url.rfind('/')+1:] if '/' in url else url
-                        st.image(url, caption=file_name, use_container_width=True)
-                        logger.info(f"메시지 {i+1} 이미지 {j+1} 표시 성공")
-                    except Exception as e:
-                        logger.error(f"메시지 {i+1} 이미지 {j+1} 표시 오류: {e}")
-                        st.error(f"이미지를 표시할 수 없습니다: {url}")
-            else:
-                logger.info(f"메시지 {i+1}에 이미지가 없습니다.")
-
+                    file_name = url[url.rfind('/')+1:] if '/' in url else url
+                    st.image(url, caption=file_name, use_container_width=True)
+                    
 display_chat_messages()
 
 # Greet user
@@ -160,10 +144,7 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                    
             image_url = None
             if mode == "GS Agent":
-                if mcp_agent_mode == "Single":                                          
-                    response = asyncio.run(agent.run_agent(query=prompt, containers=containers))
-                elif mcp_agent_mode == "Multiple":
-                    response = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
+                response = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
             elif mode == "이미지 분석":
                 if uploaded_file is None or uploaded_file == "":
                     st.error("파일을 먼저 업로드하세요.")
