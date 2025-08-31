@@ -260,8 +260,7 @@ streamlit run application/app.py
 
 죄측의 메뉴에서 사용하는 모델을 선택할 수 있으며, "Debug Mode"로 최종 결과와 전체 결과를 구분하여 확인할 수 있습니다. 
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/9d7acc2d-d951-44e1-9bd7-3f10c7720fa4" />
-
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/4d72b952-90cc-4d1e-9f67-a200a2d01578" />
 
 ### 실행 결과
 
