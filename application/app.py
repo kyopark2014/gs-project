@@ -59,7 +59,7 @@ with st.sidebar:
     # model selection box
     modelName = st.selectbox(
         '🖊️ 사용 모델을 선택하세요',
-        ('Claude 4 Sonnet', 'Claude 3.7 Sonnet', 'Claude 3.5 Sonnet', 'Claude 3.0 Sonnet'), index=1
+        ('Claude 4 Sonnet', 'Claude 3.7 Sonnet', 'Claude 3.5 Sonnet', 'Claude 3.0 Sonnet'), index=0
     )    
 
     # debug checkbox
@@ -110,13 +110,15 @@ def display_chat_messages() -> None:
     """Print message history
     @returns None
     """
-    for i, message in enumerate(st.session_state.messages):
+    for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-            if "images" in message and message["images"]:
-                for j, url in enumerate(message["images"]):
-                    file_name = url[url.rfind('/')+1:] if '/' in url else url
+            if "images" in message:                
+                for url in message["images"]:
+                    logger.info(f"url: {url}")
+
+                    file_name = url[url.rfind('/')+1:]
                     st.image(url, caption=file_name, use_container_width=True)
+            st.markdown(message["content"])
                     
 display_chat_messages()
 
@@ -158,7 +160,10 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                    
             image_url = None
             if mode == "GS Agent":
-                response = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
+                response, image_url = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
+
+                logger.info(f"response: {response}")
+                
             elif mode == "이미지 분석":
                 if uploaded_file is None or uploaded_file == "":
                     st.error("파일을 먼저 업로드하세요.")
@@ -171,15 +176,13 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                     st.session_state.messages.append({"role": "assistant", "content": summary})
                     response = summary
 
-            assistant_message = {
+            st.session_state.messages.append({
                 "role": "assistant", 
                 "content": response,
                 "images": image_url if image_url else []
-            }
-            st.session_state.messages.append(assistant_message)
-            
-            if image_url:
-                for url in image_url:
-                    logger.info(f"url: {url}")
-                    file_name = url[url.rfind('/')+1:]
-                    st.image(url, caption=file_name, use_container_width=True)
+            })
+
+            for url in image_url:
+                logger.info(f"url: {url}")
+                file_name = url[url.rfind('/')+1:]
+                st.image(url, caption=file_name, use_container_width=True)

@@ -7,6 +7,7 @@ import boto3
 import re
 import chat
 import info
+import contextlib
 
 from typing import Dict, List, Optional
 from strands import Agent
@@ -132,15 +133,53 @@ knowledge_base_client = repl_coder_client = notion_client = None
 
 def initialize_agent():
     """Initialize the global agent with MCP client"""
-    knowledge_base_client = create_mcp_client("knowledge_base")
-    repl_coder_client = create_mcp_client("repl_coder")
-    notion_client = create_mcp_client("notionApi")
+    # MCP server mapping
+    mcp_server_mapping = {
+        "RAG": "knowledge_base",
+        "Notion": "notionApi", 
+        "Code Interpreter": "repl_coder"
+    }
+    
+    # Create clients based on chat.mcp_servers
+    active_clients = []
+    knowledge_base_client = None
+    repl_coder_client = None
+    notion_client = None
+    
+    # Set default servers if none specified
+    servers_to_use = chat.mcp_servers if chat.mcp_servers else ["RAG"]
+    
+    for server_name in servers_to_use:
+        if server_name in mcp_server_mapping:
+            client_name = mcp_server_mapping[server_name]
+            client = create_mcp_client(client_name)
+            active_clients.append(client)
+            
+            # Assign to each client variable
+            if server_name == "RAG":
+                knowledge_base_client = client
+            elif server_name == "Notion":
+                notion_client = client
+            elif server_name == "Code Interpreter":
+                repl_coder_client = client
+                
+            logger.info(f"Created MCP client for {server_name} -> {client_name}")
+        else:
+            logger.warning(f"Unknown MCP server: {server_name}")
+    
+    if not active_clients:
+        logger.warning("No valid MCP clients created")
+        return None, None, None, None, []
         
     # Create agent within MCP client context manager
-    with knowledge_base_client, repl_coder_client, notion_client:
-        mcp_tools = knowledge_base_client.list_tools_sync()
-        mcp_tools.extend(repl_coder_client.list_tools_sync())
-        mcp_tools.extend(notion_client.list_tools_sync())
+    with contextlib.ExitStack() as stack:
+        for client in active_clients:
+            stack.enter_context(client)
+        
+        mcp_tools = []
+        for client in active_clients:
+            mcp_tools.extend(client.list_tools_sync())
+        
         logger.info(f"mcp_tools: {mcp_tools}")
         
         tools = []
@@ -183,10 +222,10 @@ def get_tool_info(tool_name, tool_content):
             path = json_data["path"]
             if isinstance(path, list):
                 for url in path:
-                    if url and url.strip():  # 빈 문자열이 아닌 경우만 추가
+                    if url and url.strip():  # Only add if not empty string
                         urls.append(url)
             else:
-                if path and path.strip():  # 빈 문자열이 아닌 경우만 추가
+                if path and path.strip():  # Only add if not empty string
                     urls.append(path)            
 
         for item in json_data:
@@ -238,7 +277,7 @@ async def show_streams(agent_stream, containers):
     result = ""
     current_response = ""
     references = []
-    image_url = []  # 로컬 변수로 관리
+    image_url = []  
 
     async for event in agent_stream:
         # logger.info(f"event: {event}")
@@ -251,7 +290,7 @@ async def show_streams(agent_stream, containers):
                 if "text" in content:
                     logger.info(f"text: {content['text']}")
 
-                    if containers is not None:
+                    if chat.debug_mode == "Enable" and containers is not None:
                         add_response(containers, content['text'])
 
                     result = content['text']
@@ -269,7 +308,7 @@ async def show_streams(agent_stream, containers):
                     
                     logger.info(f"tool_name: {tool_name}, original_arg: {input_params}, filtered_arg: {filtered_input}")
                     
-                    if containers is not None:       
+                    if chat.debug_mode == "Enable" and containers is not None:       
                         add_notification(containers, f"tool name: {tool_name}, arg: {filtered_input}")
                         containers['status'].info(get_status_msg(f"{tool_name}"))
             
@@ -282,7 +321,7 @@ async def show_streams(agent_stream, containers):
                         tool_content = tool_result['content']
                         for content in tool_content:
                             if "text" in content:
-                                if containers is not None:
+                                if chat.debug_mode == "Enable" and containers is not None:
                                     add_notification(containers, f"tool result: {content['text']}")
 
                                 content, urls, refs = get_tool_info(tool_name, content['text'])
@@ -374,27 +413,50 @@ def create_mcp_client(mcp_server_name: str):
     return mcp_client
 
 tool_list = None
-async def run_agent(query: str, mcp_servers: list, containers):
+# Store previous mcp_servers to detect changes
+previous_mcp_servers = None
+
+async def run_agent(query: str, containers):
     global index, status_msg
-    global agent, knowledge_base_client, repl_coder_client, notion_client, tool_list
+    global agent, knowledge_base_client, repl_coder_client, notion_client, tool_list, previous_mcp_servers
     index = 0
     status_msg = []
     
-    containers['status'].info(get_status_msg(f"(start"))  
+    if chat.debug_mode == "Enable":
+        containers['status'].info(get_status_msg(f"(start"))  
 
-    # Initialize agent if not exists
-    if agent is None:
+    # Check if mcp_servers has changed or agent doesn't exist
+    if agent is None or previous_mcp_servers != chat.mcp_servers:
+        logger.info(f"MCP servers changed from {previous_mcp_servers} to {chat.mcp_servers}, reinitializing agent")
         agent, knowledge_base_client, repl_coder_client, notion_client, tool_list = initialize_agent()
+        previous_mcp_servers = chat.mcp_servers.copy() if chat.mcp_servers else []
 
-    if chat.debug_mode and containers is not None and tool_list:
+    if chat.debug_mode == "Enable" and containers is not None and tool_list:
         containers['tools'].info(f"tool_list: {tool_list}")
     
-    with knowledge_base_client, repl_coder_client, notion_client:
+    # Include only active clients in context manager
+    active_clients = []
+    if knowledge_base_client:
+        active_clients.append(knowledge_base_client)
+    if repl_coder_client:
+        active_clients.append(repl_coder_client)
+    if notion_client:
+        active_clients.append(notion_client)
+    
+    if not active_clients:
+        logger.warning("No active MCP clients available")
+        return "MCP clients are not active", []
+    
+    with contextlib.ExitStack() as stack:
+        for client in active_clients:
+            stack.enter_context(client)
+        
         agent_stream = agent.stream_async(query)
         result, image_url = await show_streams(agent_stream, containers)
 
     logger.info(f"result: {result}")
 
-    containers['status'].info(get_status_msg(f"end)"))
+    if chat.debug_mode == "Enable":
+        containers['status'].info(get_status_msg(f"end)"))
 
     return result, image_url

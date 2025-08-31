@@ -30,7 +30,7 @@ logger = logging.getLogger("chat")
 debug_mode = False
 mcp_servers = []
 def update(modelName, debugMode, mcpServers):
-    global model_name, models, model_type, model_id, debug_mode
+    global model_name, models, model_type, model_id, debug_mode, mcp_servers
 
     if modelName is not model_name:
         model_name = modelName
