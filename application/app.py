@@ -158,7 +158,7 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                 "notification": [st.empty() for _ in range(500)]
             }  
                    
-            image_url = None
+            image_url = []
             if mode == "GS Agent":
                 response, image_url = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
 
@@ -182,6 +182,7 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                 "images": image_url if image_url else []
             })
 
+            logger.info(f"image_url: {image_url}")
             for url in image_url:
                 logger.info(f"url: {url}")
                 file_name = url[url.rfind('/')+1:]
