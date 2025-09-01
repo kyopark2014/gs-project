@@ -420,6 +420,7 @@ async def run_agent(query: str, containers):
     index = 0
     status_msg = []
     
+    image_url = []
     if chat.debug_mode == "Enable":
         containers['status'].info(get_status_msg(f"(start"))  
 
