@@ -283,7 +283,9 @@ Code Interpreter MCP를 이용해 아래와 같이 그래프를 그릴 수 있�
 
 ## Production Deployment
 
-### 배포 준비
+### AgentCore Deployment
+
+#### 배포 준비
 
 아래의 명령어로 gs_agent 폴더로 이동한 후에 agent 동작에 필요한 policy를 생성합니다.
 
@@ -298,7 +300,7 @@ python create_iam_policies.py
 python create_bearer_token.py
 ```
 
-### Docker 이미지 준비
+#### Docker 이미지 준비
 
 아래와 같이 [build-docker.sh](./runtime/gs_agent/build-docker.sh)를 이용해 docker를 빌드합니다. 이때 PC에 Docker Desktop이 설치되어 있어야 합니다.
 
@@ -318,13 +320,52 @@ Local에서 테스트 하기 위하여 아래와 같이 실행합니다.
 docker logs gs_gs_agent-container -f
 ```
 
-### Knowledge Base 정보 업데이트
+#### Knowledge Base 정보 업데이트
 
 config.json 파일을 열어서 아래와 같이 knowledge_base_id를 추가합니다.
 
 ```java
 "knowledge_base_id":"AT1MDKAVWG"
 ```
+
+#### Local 동작 시험
+
+아래와 같이 local에서 동작을 테스트 할 수 있습니다.
+
+```text
+python test_runtime_local.py
+```
+
+#### ECR 배포
+
+local에서 동작에 문제가 없을 경우에 아래와 같이 ECR에 push 합니다. 
+
+```text
+./push-to-ecr.sh
+```
+
+#### AgentCore 배포
+
+아래 명령어로 AgentCore에 배포합니다.
+
+```text
+python create_agent_runtime.py
+```
+
+배포가 성공하면 아래와 같이 AgentCore Runtime에서 확인할 수 있습니다.
+
+<img width="729" height="158" alt="image" src="https://github.com/user-attachments/assets/0f4fdf7c-1afe-4ada-bcef-cfef1adc6d60" />
+
+#### AgentCore Runtime 동작확인
+
+아래와 같이 AgentCore Runtime에 배포된 agent를 테스트 할 수 있습니다.
+
+```text
+python test_runtime_remote.py
+```
+
+
+
 
 ### Tips
 
