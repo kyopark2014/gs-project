@@ -1,3 +1,19 @@
+claude_4_5_sonnet_models = [   # Sonnet 4.5
+    {
+        "bedrock_region": "ap-northeast-2", 
+        "model_type": "claude",
+        "model_id": "apac.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    }
+]
+
+claude_4_5_haiku_models = [   # Haiku 4.5
+    {
+        "bedrock_region": "ap-northeast-2", 
+        "model_type": "claude",
+        "model_id": "apac.anthropic.claude-haiku-4-5-20251001-v1:0"
+    }
+]
+
 claude_4_sonnet_models = [   # Sonnet 4
     {
         "bedrock_region": "ap-northeast-2", 
@@ -47,8 +63,14 @@ def get_model_info(model_name):
         models = claude_3_0_sonnet_models
     elif model_name == "Claude 3.5 Sonnet":
         models = claude_3_5_sonnet_v2_models
+    elif model_name == "Claude 3.7 Sonnet":
+        models = claude_3_7_sonnet_models
     elif model_name == "Claude 4 Sonnet":
         models = claude_4_sonnet_models
+    elif model_name == "Claude 4.5 Sonnet":
+        models = claude_4_5_sonnet_models
+    elif model_name == "Claude 4.5 Haiku":
+        models = claude_4_5_haiku_models
 
     return models
 
