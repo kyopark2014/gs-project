@@ -281,6 +281,78 @@ Code Interpreter MCP를 이용해 아래와 같이 그래프를 그릴 수 있�
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/f3fad29e-92d2-41e4-9888-651085bbfc17" />
 
 
+## Production Deployment
+
+### 배포 준비
+
+아래의 명령어로 gs_agent 폴더로 이동한 후에 agent 동작에 필요한 policy를 생성합니다.
+
+```text
+cd runtime/gs_agent 
+python create_iam_policies.py
+```
+
+이후 아래와 같이 agent 인증에 필요한 token을 생성합니다. 생성된 token은 secret에 보관되고 agent 호출시 사용됩니다.
+
+```text
+python create_bearer_token.py
+```
+
+### Docker 이미지 준비
+
+아래와 같이 [build-docker.sh](./runtime/gs_agent/build-docker.sh)를 이용해 docker를 빌드합니다. 이때 PC에 Docker Desktop이 설치되어 있어야 합니다.
+
+```text
+./build-docker.sh
+```
+
+Local에서 테스트 하기 위하여 아래와 같이 실행합니다.
+
+```text
+./run-docker.sh
+```
+
+별도 터미널을 열어서 아래의 명령어로 실행 결과를 확인합니다.
+
+```text
+docker logs gs_gs_agent-container -f
+```
+
+### Knowledge Base 정보 업데이트
+
+config.json 파일을 열어서 아래와 같이 knowledge_base_id를 추가합니다.
+
+```java
+"knowledge_base_id":"AT1MDKAVWG"
+```
+
+### Tips
+
+사용할 수 있는 모델의 확인 방법은 아래와 같습니다.
+
+```text
+aws bedrock list-foundation-models --region=ap-northeast-2 --by-provider anthropic --query "modelSummaries[*].modelId"
+```
+
+이때의 결과는 아래와 같습니다.
+
+```java
+[
+    "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "anthropic.claude-3-5-sonnet-20240620-v1:0",
+    "anthropic.claude-3-haiku-20240307-v1:0:200k",
+    "anthropic.claude-3-haiku-20240307-v1:0",
+    "anthropic.claude-3-sonnet-20240229-v1:0:28k",
+    "anthropic.claude-3-sonnet-20240229-v1:0:200k",
+    "anthropic.claude-3-sonnet-20240229-v1:0",
+    "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "anthropic.claude-3-7-sonnet-20250219-v1:0",
+    "anthropic.claude-sonnet-4-20250514-v1:0"
+]
+```
+
+
 ## Reference
 
 [Hosting a local MCP server](https://developers.notion.com/docs/hosting-open-source-mcp)
