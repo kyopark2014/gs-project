@@ -300,6 +300,12 @@ python create_iam_policies.py
 python create_bearer_token.py
 ```
 
+[mcp.json.sample.json](./runtime/gs_agent/mcp.json.sample.json)을 아래와 같이 이름을 변경하고 파일을 열어서 내용을 업데이트합니다.
+
+```text
+mv mcp.json.sample.json mcp.json
+```
+
 #### Docker 이미지 준비
 
 아래와 같이 [build-docker.sh](./runtime/gs_agent/build-docker.sh)를 이용해 docker를 빌드합니다. 이때 PC에 Docker Desktop이 설치되어 있어야 합니다.
