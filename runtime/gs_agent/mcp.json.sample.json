@@ -1,0 +1,19 @@
+{
+    "mcpServers": {
+        "knowledge_base": {
+            "command": "python",
+            "args": ["mcp_server_retrieve.py"]
+        },
+        "repl_coder": {
+            "command": "python",
+            "args": ["mcp_server_repl_coder.py"]
+        },
+        "notionApi": {
+            "command": "npx",
+            "args": ["-y", "@notionhq/notion-mcp-server"],
+            "env": {
+                "NOTION_TOKEN": "token_value"
+            }
+        }
+    }
+}
