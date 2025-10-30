@@ -306,6 +306,14 @@ python create_bearer_token.py
 mv mcp.json.sample.json mcp.json
 ```
 
+#### Knowledge Base 정보 업데이트
+
+config.json 파일을 열어서 아래와 같이 knowledge_base_id를 추가합니다.
+
+```java
+"knowledge_base_id":"AT1MDKAVWG"
+```
+
 #### Docker 이미지 준비
 
 아래와 같이 [build-docker.sh](./runtime/gs_agent/build-docker.sh)를 이용해 docker를 빌드합니다. 이때 PC에 Docker Desktop이 설치되어 있어야 합니다.
@@ -320,13 +328,6 @@ Local에서 테스트 하기 위하여 아래와 같이 실행합니다.
 ./run-docker.sh
 ```
 
-#### Knowledge Base 정보 업데이트
-
-config.json 파일을 열어서 아래와 같이 knowledge_base_id를 추가합니다.
-
-```java
-"knowledge_base_id":"AT1MDKAVWG"
-```
 
 #### Local 동작 시험
 
