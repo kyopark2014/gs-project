@@ -24,7 +24,7 @@ def load_config():
 
 config = load_config()
 
-bedrock_region = config['region']
+bedrock_region = "ap-northeast-2"
 projectName = config['projectName']
 knowledge_base_id = config['knowledge_base_id']
 number_of_results = 5

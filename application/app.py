@@ -5,6 +5,7 @@ import os
 import chat
 import asyncio
 import multi_mcp_agent
+import agentcore_client
 
 logging.basicConfig(
     level=logging.INFO,  # Default to INFO level
@@ -24,6 +25,9 @@ mode_descriptions = {
     "GS Agent": [
         "MCP를 도구로 활용하는 Agent를 이용합니다."
     ],
+    "GS Agent (AgentCore)": [
+        "AgentCore를 이용하여 Agent를 실행합니다."
+    ],
     "이미지 분석": [
         "이미지를 선택하여 멀티모달을 이용하여 분석합니다."
     ]
@@ -41,7 +45,7 @@ with st.sidebar:
 
     # radio selection
     mode = st.radio(
-        label="원하는 대화 형태를 선택하세요. ",options=["GS Agent", "이미지 분석"], index=0
+        label="원하는 대화 형태를 선택하세요. ",options=["GS Agent", "GS Agent (AgentCore)", "이미지 분석"], index=1
     )   
     st.info(mode_descriptions[mode][0])
 
@@ -161,6 +165,11 @@ if prompt := st.chat_input("메시지를 입력하세요."):
             image_url = []
             if mode == "GS Agent":
                 response, image_url = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
+
+                logger.info(f"response: {response}")
+
+            elif mode == "GS Agent (AgentCore)":
+                response, image_url = agentcore_client.run_agent(prompt=prompt, model_name=modelName, containers=containers)
 
                 logger.info(f"response: {response}")
                 
