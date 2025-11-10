@@ -622,7 +622,7 @@ def run_agent_in_docker(prompt, agent_type, history_mode, mcp_servers, model_nam
         logger.error(error_msg)
         return f"Error: {error_msg}", []
 
-def run_agent(prompt, model_name, containers):
+def run_agent(prompt, mcp_servers, model_name, containers):
     global index
     index = 0
 
@@ -632,7 +632,6 @@ def run_agent(prompt, model_name, containers):
     user_id = "gs" # for testing
     logger.info(f"user_id: {user_id}")
 
-    mcp_servers = ["RAG"]
     history_mode = "Disable"
 
     payload = json.dumps({

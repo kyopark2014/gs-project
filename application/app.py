@@ -83,6 +83,8 @@ with st.sidebar:
     st.success(f"Connected to {modelName}", icon="💚")
     clear_button = st.button("대화 초기화", key="clear")
 
+    mcp_servers = [server for server, is_selected in mcp_selections.items() if is_selected]
+
 st.title('🔮 '+ mode)
 
 if clear_button or "messages" not in st.session_state:
@@ -169,7 +171,8 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                 logger.info(f"response: {response}")
 
             elif mode == "GS Agent (AgentCore)":
-                response, image_url = agentcore_client.run_agent(prompt=prompt, model_name=modelName, containers=containers)
+                logger.info(f"mcp_servers: {mcp_servers}")
+                response, image_url = agentcore_client.run_agent(prompt=prompt, mcp_servers=mcp_servers, model_name=modelName, containers=containers)
 
                 logger.info(f"response: {response}")
                 
