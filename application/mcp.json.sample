@@ -4,6 +4,10 @@
             "command": "python",
             "args": ["application/mcp_server_retrieve.py"]
         },
+        "long_term_memory": {
+            "command": "python",
+            "args": ["application/mcp_server_long_term_memory.py"]
+        },
         "repl_coder": {
             "command": "python",
             "args": ["application/mcp_server_repl_coder.py"]
