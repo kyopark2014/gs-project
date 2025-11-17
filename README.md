@@ -510,6 +510,15 @@ def save_conversation_to_memory(memory_id, actor_id, session_id, query, result):
 
 ### Long Term Memory
 
+여기서는 Long Term Memory를 [mcp_server_long_term_memory.py](./application/mcp_server_long_term_memory.py)와 같이 MCP를 이용해 활용합니다. 이를 위해 아래와 같은 내용을 mcp.json에 추가합니다.
+
+```java
+    "long_term_memory": {
+        "command": "python",
+        "args": ["application/mcp_server_long_term_memory.py"]
+    }
+```
+
 Long term meory를 위해 필요한 정보에는 memory, actor, session, namespace가 있습니다. 아래와 같이 이미 저장된 값이 있다면 가져오고, 없다면 생성합니다. 상세한 코드는 [mcp_long_term_memory.py](./application/mcp_long_term_memory.py)을 참조합니다. 조회할 때에는 아래와 같이 retrieve_memory_records()와 같이 구현합니다.
 
 ```python
