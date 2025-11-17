@@ -457,48 +457,7 @@ def save_conversation_to_memory(memory_id, actor_id, session_id, query, result):
 
 ### Long Term Memory
 
-Long term meory를 위해 필요한 정보에는 memory, actor, session, namespace가 있습니다. 아래와 같이 이미 저장된 값이 있다면 가져오고, 없다면 생성합니다. 상세한 코드는 [langgraph_agent.py](./application/langgraph_agent.py)을 참조합니다.
-
-```python
-# initate memory variables
-memory_id, actor_id, session_id, namespace = agentcore_memory.load_memory_variables(chat.user_id)
-logger.info(f"memory_id: {memory_id}, actor_id: {actor_id}, session_id: {session_id}, namespace: {namespace}")
-
-if memory_id is None:
-    # retrieve memory id
-    memory_id = agentcore_memory.retrieve_memory_id()
-    logger.info(f"memory_id: {memory_id}")        
-    
-    # create memory if not exists
-    if memory_id is None:
-        memory_id = agentcore_memory.create_memory(namespace)
-    
-    # create strategy if not exists
-    agentcore_memory.create_strategy_if_not_exists(memory_id=memory_id, namespace=namespace, strategy_name=chat.user_id)
-
-    # save memory variables
-    agentcore_memory.update_memory_variables(
-        user_id=chat.user_id, 
-        memory_id=memory_id, 
-        actor_id=actor_id, 
-        session_id=session_id, 
-        namespace=namespace)
-```
-
-생성형 AI 애플리케이션에서는 대화중 필요한 메모리 정보가 있다면 이를 MCP를 이용해 조회합니다. [mcp_server_long_term_memory.py](./application/mcp_server_long_term_memory.py)에서는 long term memory를 이용해 대화 이벤트를 저장하거나 조회할 수 있습니다. 아래는 신규로 레코드를 생성하는 방법입니다.
-
-```python
-response = create_event(
-    memory_id=memory_id,
-    actor_id=actor_id,
-    session_id=session_id,
-    content=content,
-    event_timestamp=datetime.now(timezone.utc),
-)
-event_data = response.get("event", {}) if isinstance(response, dict) else {}
-```
-
-대화에 필요한 정보는 아래와 같이 조회합니다.
+Long term meory를 위해 필요한 정보에는 memory, actor, session, namespace가 있습니다. 아래와 같이 이미 저장된 값이 있다면 가져오고, 없다면 생성합니다. 상세한 코드는 [mcp_long_term_memory.py](./application/mcp_long_term_memory.py)을 참조합니다. 조회할 때에는 아래와 같이 retrieve_memory_records()와 같이 구현합니다.
 
 ```python
 contents = []
@@ -509,15 +468,50 @@ response = retrieve_memory_records(
     max_results=max_results,
     next_token=next_token,
 )
+logger.info(f"response: {response}")
+
+# Extract only the relevant fields from the response
 relevant_data = {}
 if isinstance(response, dict):
     if "memoryRecordSummaries" in response:
-        relevant_data["memoryRecordSummaries"] = response["memoryRecordSummaries"]    
+        relevant_data["memoryRecordSummaries"] = response["memoryRecordSummaries"]
+    if "nextToken" in response:
+        relevant_data["nextToken"] = response["nextToken"]
+    logger.info(f"relevant_data: {relevant_data}")
+    
+    # extract content from memoryRecordSummaries
     for memory_record_summary in relevant_data["memoryRecordSummaries"]:
         json_content = memory_record_summary["content"]["text"]
         content = json.loads(json_content)
+        logger.info(f"content: {content}")
         contents.append(content)
+
+return {
+    "text": contents
+}
 ```
+
+Long term memory로 부터 조회할 때에는 아래와 같이 [retrieve_memory_records](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/bedrock-agentcore/client/retrieve_memory_records.html)를 이용합니다.
+
+```python
+bedrock_agent_core_client = boto3.client(
+    "bedrock-agentcore",
+    region_name=bedrock_region
+)
+
+def retrieve_memory_records(
+    memory_id: str,
+    namespace: str,
+    search_query: str,
+    max_results: Optional[int] = 20, 
+    next_token: Optional[str] = None,
+) -> Dict:
+    topK = 20 # Maximum number of top-scoring memory records to return
+    params = {"memoryId": memory_id, "namespace": namespace, "searchCriteria": {"topK":topK, "searchQuery": search_query}}
+
+    return bedrock_agent_core_client.retrieve_memory_records(**params)
+```
+
 
 "내가 다니는 회사에 대해 소개해줘"라고 질문하면 long term memory에서 사용자에 대한 정보를 가져와서 아래와 같은 결과를 보여줍니다.
 
