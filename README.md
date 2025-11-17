@@ -565,6 +565,7 @@ def retrieve_memory_records(
     return bedrock_agent_core_client.retrieve_memory_records(**params)
 ```
 
+### 메모리 동작
 
 "내가 다니는 회사에 대해 소개해줘"라고 질문하면 long term memory에서 사용자에 대한 정보를 가져와서 아래와 같은 결과를 보여줍니다.
 
