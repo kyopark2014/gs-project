@@ -45,12 +45,12 @@ with st.sidebar:
 
     # radio selection
     mode = st.radio(
-        label="원하는 대화 형태를 선택하세요. ",options=["GS Agent", "GS Agent (AgentCore)", "이미지 분석"], index=1
+        label="원하는 대화 형태를 선택하세요. ",options=["GS Agent", "GS Agent (AgentCore)", "이미지 분석"], index=0
     )   
     st.info(mode_descriptions[mode][0])
 
     mcp_options = [
-        "RAG", "Notion", "Code Interpreter"
+        "RAG", "Notion", "Code Interpreter", "Long Term Memory"
     ]
     mcp_selections = {}
     default_selections = ["RAG"]
@@ -70,6 +70,11 @@ with st.sidebar:
     select_debugMode = st.checkbox('Debug Mode', value=True)
     debugMode = 'Enable' if select_debugMode else 'Disable'
 
+    # Memory
+    enable_memory = st.checkbox('Memory', value=True)
+    memoryMode = 'Enable' if enable_memory else 'Disable'
+    # logger.info(f"memory_mode: {memory_mode}")
+
     uploaded_file = None
     if mode=='이미지 분석':
         st.subheader("🌇 이미지 업로드")
@@ -78,7 +83,7 @@ with st.sidebar:
     mcpServers = [server for server, is_selected in mcp_selections.items() if is_selected]
     logger.info(f"mcpServers: {mcpServers}")
 
-    chat.update(modelName, debugMode, mcpServers)
+    chat.update(modelName, debugMode, mcpServers, memoryMode)
 
     st.success(f"Connected to {modelName}", icon="💚")
     clear_button = st.button("대화 초기화", key="clear")
@@ -169,6 +174,9 @@ if prompt := st.chat_input("메시지를 입력하세요."):
                 response, image_url = asyncio.run(multi_mcp_agent.run_agent(query=prompt, containers=containers))
 
                 logger.info(f"response: {response}")
+
+                if memoryMode == "Enable":
+                    chat.save_to_memory(query=prompt, result=response)    
 
             elif mode == "GS Agent (AgentCore)":
                 logger.info(f"mcp_servers: {mcp_servers}")

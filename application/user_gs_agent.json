@@ -1,0 +1,11 @@
+{
+    "projectName": "gs-project",
+    "region": "us-west-2",
+    "knowledge_base_id": "GT6MDKEVWG",
+    "accountId": "262976740991",
+    "agentcore_memory_role": "arn:aws:iam::262976740991:role/BedrockMemoryRoleForgs_project",
+    "memory_id": "gs_project-4dgKKW3dz5",
+    "actor_id": "gs_agent",
+    "session_id": "8c6503c596964841a4965ba8ce3e4900",
+    "namespace": "/users/gs_agent"
+}

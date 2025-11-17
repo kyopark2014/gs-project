@@ -11,12 +11,15 @@ from langchain_core.messages import HumanMessage
 from langchain_aws import ChatBedrock
 from PIL import Image
 from io import BytesIO
+import agentcore_memory
 
 model_name = "Claude 3.7 Sonnet"
 model_type = "claude"
 models = info.get_model_info(model_name)
 model_id = models[0]["model_id"]
 reasoning_mode = 'Disable'
+enable_memory = 'Disable'
+user_id = "gs_agent" # for testing
 
 logging.basicConfig(
     level=logging.INFO,  # Default to INFO level
@@ -28,9 +31,11 @@ logging.basicConfig(
 logger = logging.getLogger("chat")
 
 debug_mode = False
+enable_memory = 'Disable'
+
 mcp_servers = []
-def update(modelName, debugMode, mcpServers):
-    global model_name, models, model_type, model_id, debug_mode, mcp_servers
+def update(modelName, debugMode, mcpServers, memoryMode):
+    global model_name, models, model_type, model_id, debug_mode, mcp_servers, enable_memory
 
     if modelName is not model_name:
         model_name = modelName
@@ -49,6 +54,10 @@ def update(modelName, debugMode, mcpServers):
     if mcpServers is not mcp_servers:
         mcp_servers = mcpServers
         logger.info(f"mcp_servers: {mcp_servers}")
+
+    if enable_memory != memoryMode:
+        enable_memory = memoryMode
+        logger.info(f"enable_memory: {enable_memory}")
 
 def summary_image(img_base64, instruction):      
     llm = get_chat(extended_thinking=reasoning_mode)
@@ -292,3 +301,42 @@ def summarize_image(image_content, prompt, st):
     logger.info(f"image contents: {contents}")
 
     return contents
+
+memory_id = actor_id = session_id = None
+def initiate_memory():
+    global memory_id, actor_id, session_id
+
+    logger.info(f"user_id: {user_id}")
+
+    # initate memory variables    
+    memory_id, actor_id, session_id, namespace = agentcore_memory.load_memory_variables(user_id)
+    logger.info(f"memory_id: {memory_id}, actor_id: {actor_id}, session_id: {session_id}, namespace: {namespace}")
+
+    if memory_id is None:
+        # retrieve memory id
+        memory_id = agentcore_memory.retrieve_memory_id()
+        logger.info(f"memory_id: {memory_id}")
+        
+        # create memory if not exists
+        if memory_id is None:
+            logger.info(f"Memory will be created...")
+            memory_id = agentcore_memory.create_memory(namespace, user_id)
+            logger.info(f"Memory was created... {memory_id}")
+        
+        # create strategy if not exists
+        agentcore_memory.create_strategy_if_not_exists(memory_id=memory_id, namespace=namespace, strategy_name=user_id)
+
+        # save memory variables
+        agentcore_memory.update_memory_variables(
+            user_id=user_id, 
+            memory_id=memory_id, 
+            actor_id=actor_id, 
+            session_id=session_id, 
+            namespace=namespace)
+    
+enable_short_term_memory = "Disable"
+
+def save_to_memory(query, result):
+    if memory_id is None and enable_memory=="Enable":
+        initiate_memory()    
+    agentcore_memory.save_conversation_to_memory(memory_id, actor_id, session_id, query, result) 

@@ -49,8 +49,6 @@ def get_status_msg(status):
         status = " -> ".join(status_msg)
         return "[status]\n" + status
 
-aws_region = utils.bedrock_region
-
 def get_model():
     STOP_SEQUENCE = "\n\nHuman:" 
     maxOutputTokens = 4096 # 4k
@@ -127,7 +125,7 @@ conversation_manager = SlidingWindowConversationManager(
     window_size=10,  
 )
 agent = None
-knowledge_base_client = repl_coder_client = notion_client = None
+knowledge_base_client = repl_coder_client = notion_client = long_term_memory_client = None
 
 def initialize_agent():
     """Initialize the global agent with MCP client"""
@@ -135,7 +133,8 @@ def initialize_agent():
     mcp_server_mapping = {
         "RAG": "knowledge_base",
         "Notion": "notionApi", 
-        "Code Interpreter": "repl_coder"
+        "Code Interpreter": "repl_coder",
+        "Long Term Memory": "long_term_memory"
     }
     
     # Create clients based on chat.mcp_servers
@@ -143,6 +142,7 @@ def initialize_agent():
     knowledge_base_client = None
     repl_coder_client = None
     notion_client = None
+    long_term_memory_client = None
     
     # Set default servers if none specified
     servers_to_use = chat.mcp_servers if chat.mcp_servers else ["RAG"]
@@ -160,7 +160,8 @@ def initialize_agent():
                 notion_client = client
             elif server_name == "Code Interpreter":
                 repl_coder_client = client
-                
+            elif server_name == "Long Term Memory":
+                long_term_memory_client = client
             logger.info(f"Created MCP client for {server_name} -> {client_name}")
         else:
             logger.warning(f"Unknown MCP server: {server_name}")
@@ -200,7 +201,7 @@ def initialize_agent():
             conversation_manager=conversation_manager
         )
     
-    return agent, knowledge_base_client, repl_coder_client, notion_client, tool_list
+    return agent, knowledge_base_client, repl_coder_client, notion_client, long_term_memory_client, tool_list
 
 def get_tool_info(tool_name, tool_content):
     tool_references = []    
@@ -416,7 +417,7 @@ previous_mcp_servers = None
 
 async def run_agent(query: str, containers):
     global index, status_msg
-    global agent, knowledge_base_client, repl_coder_client, notion_client, tool_list, previous_mcp_servers
+    global agent, knowledge_base_client, repl_coder_client, notion_client, long_term_memory_client, tool_list, previous_mcp_servers
     index = 0
     status_msg = []
     
@@ -427,13 +428,14 @@ async def run_agent(query: str, containers):
     # Check if mcp_servers has changed or agent doesn't exist
     if agent is None or previous_mcp_servers != chat.mcp_servers:
         logger.info(f"MCP servers changed from {previous_mcp_servers} to {chat.mcp_servers}, reinitializing agent")
-        agent, knowledge_base_client, repl_coder_client, notion_client, tool_list = initialize_agent()
+        agent, knowledge_base_client, repl_coder_client, notion_client, long_term_memory_client, tool_list = initialize_agent()
         previous_mcp_servers = chat.mcp_servers.copy() if chat.mcp_servers else []
 
     if chat.debug_mode == "Enable" and containers is not None and tool_list:
         containers['tools'].info(f"tool_list: {tool_list}")
     
     # Include only active clients in context manager
+    # Note: All client variables are declared as global, so they can be accessed directly
     active_clients = []
     if knowledge_base_client:
         active_clients.append(knowledge_base_client)
@@ -441,6 +443,12 @@ async def run_agent(query: str, containers):
         active_clients.append(repl_coder_client)
     if notion_client:
         active_clients.append(notion_client)
+    
+    # long_term_memory_client is declared as global above
+    # Read the global variable value to avoid UnboundLocalError
+    ltm_client = globals()['long_term_memory_client']
+    if ltm_client:
+        active_clients.append(ltm_client)
     
     if not active_clients:
         logger.warning("No active MCP clients available")
