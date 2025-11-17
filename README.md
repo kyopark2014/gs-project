@@ -407,7 +407,7 @@ Chatbot은 연속적인 사용자의 대화를 이용하여 사용자의 경험�
 
 아래 architecture에는 short/long term meory를 MCP로 활용합니다. [AgentCore memory](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-getting-started.html)를 이용하면 별도의 DB를 만들어서 관리하지 않아도 생성형 AI 애플리케이션에 필요한 short/long term memory를 손쉽게 활용할 수 있습니다. 대화중 발생하는 transaction은 short-term memory에 저장되며, 주로 최근 n개의 메시지를 가져오는 방식으로 활용됩니다. 대화중 중요한 정보는 long-term memory에 namespace를 이용해 저장됩니다. 저장된 정보를 조회할 때에는 namespace를 이용해 검색의 범위를 조정할 수 있습니다. Long-term memory는 prompt를 가진 strategy을 이용해 사용자의 메시지로부터 필요한 정보를 자동으로 추출합니다. 추출 과정에서는 Amazon Bedrock의 Anthropic의 Claude나 OpenAI의 OSS 같은 모델을 활용할 수 있습니다. 이와 같이 short/long term memory를 지원하는 MCP를 활용하면 대화 중에 필요한 정보를 가져와서 활용할 수 있습니다.
 
-<img src="./contents/memory.png" width="700">
+<img width="813" height="372" alt="image" src="https://github.com/user-attachments/assets/00d18ec4-0c26-408b-a89c-694b3ddbecb4" />
 
 
 ### Short Term Memory
