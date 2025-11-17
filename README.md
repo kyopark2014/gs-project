@@ -410,6 +410,59 @@ Chatbot은 연속적인 사용자의 대화를 이용하여 사용자의 경험�
 <img width="813" height="372" alt="image" src="https://github.com/user-attachments/assets/00d18ec4-0c26-408b-a89c-694b3ddbecb4" />
 
 
+### 메모리의 생성
+
+직접 메모리의 prompt를 지정할 경우에 아래와 같이 지정합니다. 
+
+```python
+USER_PREFERENCE_PROMPT = (
+    "You are tasked with analyzing conversations to extract the user's preferences. You'll be analyzing two sets of data:\n"
+    "<past_conversation>\n"
+    "[Past conversations between the user and system will be placed here for context]\n"
+    "</past_conversation>\n"
+    "<current_conversation>\n"
+    "[The current conversation between the user and system will be placed here]\n"
+    "</current_conversation>\n"
+    "Your job is to identify and categorize the user's preferences into two main types:\n"
+    "- Explicit preferences: Directly stated preferences by the user.\n"
+    "- Implicit preferences: Inferred from patterns, repeated inquiries, or contextual clues. Take a close look at user's request for implicit preferences.\n"
+    "For explicit preference, extract only preference that the user has explicitly shared. Do not infer user's preference.\n"
+    "For implicit preference, it is allowed to infer user's preference, but only the ones with strong signals, such as requesting something multiple times.\n"
+    "Use Korean.\n"
+)
+```
+
+Strategy를 이용해 아래와 같이 메모리를 추가할 수 있습니다.
+
+```python
+memory_client = MemoryClient(region_name=bedrock_region)
+
+def create_memory(namespace: str, user_id: str):
+    result = memory_client.create_memory_and_wait(
+        name=projectName.replace("-", "_"),
+        description=f"Memory for {projectName}",
+        event_expiry_days=365, # 7 - 365 days
+        strategies=[{
+            "customMemoryStrategy": {
+                "name": user_id,
+                "namespaces": [namespace],
+                "configuration" : {
+                    "userPreferenceOverride" : {
+                        "extraction" : {
+                            "modelId" : "anthropic.claude-3-5-sonnet-20241022-v2:0",
+                            "appendToPrompt": USER_PREFERENCE_PROMPT
+                        }
+                    }
+                }
+            }
+        }],
+        memory_execution_role_arn=agentcore_memory_role
+    )
+    memory_id = result.get('id')
+    return memory_id
+```
+
+
 ### 메모리 저장
 
 아래와 같이 agentcore의 memory에 저장합니다. 상세한 코드는 [agentcore_memory.py](./application/agentcore_memory.py)을 참조합니다.
