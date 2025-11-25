@@ -67,10 +67,10 @@ def get_model_info(model_name):
         models = claude_3_7_sonnet_models
     elif model_name == "Claude 4 Sonnet":
         models = claude_4_sonnet_models
-    elif model_name == "Claude 4.5 Sonnet":
-        models = claude_4_5_sonnet_models
-    elif model_name == "Claude 4.5 Haiku":
-        models = claude_4_5_haiku_models
+    # elif model_name == "Claude 4.5 Sonnet":
+    #     models = claude_4_5_sonnet_models
+    # elif model_name == "Claude 4.5 Haiku":
+    #     models = claude_4_5_haiku_models
 
     return models
 

@@ -63,27 +63,13 @@ def get_model():
 
     logger.info(f"Using model_id: {model_id}, region: {bedrock_region} (from config.json)")
 
-    # Bedrock client configuration
-    bedrock_config = Config(
-        read_timeout=900,
-        connect_timeout=900,
-        retries=dict(max_attempts=3, mode="adaptive"),
-    )
-    
-    bedrock_client = boto3.client(
-        'bedrock-runtime',
-        region_name=bedrock_region,
-        config=bedrock_config
-    )
-
+    # BedrockModel accepts region_name as a constructor parameter
     model = BedrockModel(
-        client=bedrock_client,
         model_id=model_id,
-        region_name=bedrock_region,  # Explicitly set region for BedrockModel
+        region_name=bedrock_region,
         max_tokens=maxOutputTokens,
         stop_sequences = [STOP_SEQUENCE],
         temperature = 0.1,
-        top_p = 0.9,
         additional_request_fields={
             "thinking": {
                 "type": "disabled"
