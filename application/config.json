@@ -1,7 +1,13 @@
 {
-    "projectName": "gs-project",
-    "region": "ap-northeast-2",
-    "knowledge_base_id": "GT6MDKEVWG",
-    "accountId": "262976740991",
-    "agentcore_memory_role": "arn:aws:iam::262976740991:role/BedrockMemoryRoleForgs_project"
+  "projectName": "gs-project",
+  "region": "ap-northeast-2",
+  "knowledge_base_id": "KQHG3WOC8H",
+  "accountId": "262976740991",
+  "agentcore_memory_role": "arn:aws:iam::262976740991:role/BedrockMemoryRoleForgs_project",
+  "knowledge_base_role": "arn:aws:iam::262976740991:role/role-knowledge-base-for-gs-project-ap-northeast-2",
+  "collectionArn": "arn:aws:aoss:ap-northeast-2:262976740991:collection/d68pp9amaxz257kxwqf6",
+  "opensearch_url": "https://d68pp9amaxz257kxwqf6.ap-northeast-2.aoss.amazonaws.com",
+  "s3_bucket": "storage-for-gs-project-262976740991-ap-northeast-2",
+  "s3_arn": "arn:aws:s3:::storage-for-gs-project-262976740991-ap-northeast-2",
+  "sharing_url": "https://ddk4rljjog0z6.cloudfront.net"
 }
