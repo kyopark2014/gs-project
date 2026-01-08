@@ -18,6 +18,7 @@ RUN pip install plotly_express==0.4.1 matplotlib==3.10.0 chembl-webresource-clie
 RUN pip install PyPDF2==3.0.1 wikipedia requests uv kaleido diagrams arxiv graphviz sarif-om==1.0.4
 RUN pip install strands-agents strands-agents-tools 
 RUN pip install langchain_aws langchain langchain_community langchain_experimental
+RUN pip install rich==13.9.0 bedrock-agentcore bedrock-agentcore-starter-toolkit
 
 RUN mkdir -p /root/.streamlit
 COPY config.toml /root/.streamlit/
