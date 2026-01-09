@@ -1,0 +1,97 @@
+2026-01-09 22:14:36 - INFO - ============================================================
+2026-01-09 22:14:36 - INFO - Starting AWS Infrastructure Deployment
+2026-01-09 22:14:36 - INFO - ============================================================
+2026-01-09 22:14:36 - INFO - Project: gs-project
+2026-01-09 22:14:36 - INFO - Region: ap-northeast-2
+2026-01-09 22:14:36 - INFO - Account ID: 262976740991
+2026-01-09 22:14:36 - INFO - Bucket Name: storage-for-gs-project-262976740991-ap-northeast-2
+2026-01-09 22:14:36 - INFO - ============================================================
+2026-01-09 22:14:36 - INFO - [1/10] Creating S3 bucket: storage-for-gs-project-262976740991-ap-northeast-2
+2026-01-09 22:14:37 - WARNING - S3 bucket already exists: storage-for-gs-project-262976740991-ap-northeast-2
+2026-01-09 22:14:37 - INFO - S3 bucket created...
+2026-01-09 22:14:37 - INFO - [2/10] Creating Knowledge Base IAM role
+2026-01-09 22:14:38 - WARNING - IAM role already exists: role-knowledge-base-for-gs-project-ap-northeast-2
+2026-01-09 22:14:39 - INFO - [2/10] Creating Agent IAM role
+2026-01-09 22:14:39 - WARNING - IAM role already exists: role-agent-for-gs-project-ap-northeast-2
+2026-01-09 22:14:41 - INFO - [2/10] Creating EC2 IAM role
+2026-01-09 22:14:41 - WARNING - IAM role already exists: role-ec2-for-gs-project-ap-northeast-2
+2026-01-09 22:14:45 - INFO - IAM roles created...
+2026-01-09 22:14:45 - INFO - [3/10] Creating Secrets Manager secrets
+2026-01-09 22:14:45 - INFO - Please enter API keys when prompted (press Enter to skip and leave empty):
+2026-01-09 22:14:45 - WARNING -   Secret already exists: openweathermap-gs-project
+2026-01-09 22:14:45 - WARNING -   Secret already exists: tavilyapikey-gs-project
+2026-01-09 22:14:45 - INFO - ✓ Created 2 secrets
+2026-01-09 22:14:45 - INFO - Secrets created...
+2026-01-09 22:14:45 - INFO - [4/10] Creating OpenSearch Serverless collection
+2026-01-09 22:14:46 - WARNING - OpenSearch collection already exists: gs-project
+2026-01-09 22:14:46 - INFO - OpenSearch collection created...
+2026-01-09 22:14:46 - INFO - [4.5/10] Creating Knowledge Base with OpenSearch collection
+2026-01-09 22:14:46 - INFO -   Creating vector index in OpenSearch collection...
+2026-01-09 22:14:46 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2026-01-09 22:14:46 - INFO -   Checking if Knowledge Base already exists...
+2026-01-09 22:14:46 - WARNING - Knowledge Base already exists: KQHG3WOC8H
+2026-01-09 22:14:46 - INFO - Knowledge Base is using correct OpenSearch collection
+2026-01-09 22:14:46 - INFO - Knowledge base created...
+2026-01-09 22:14:46 - INFO - [5/10] Creating VPC and networking resources
+2026-01-09 22:14:46 - INFO - Using CIDR block: 10.23.0.0/16
+2026-01-09 22:14:46 - WARNING - VPC already exists: vpc-06b8dd54b1b13789f
+2026-01-09 22:14:47 - INFO -   Added internet gateway route to main route table: rtb-0424f7545c54d3a44
+2026-01-09 22:14:47 - INFO - VPC created...
+2026-01-09 22:14:47 - INFO - [6/10] Creating Application Load Balancer
+2026-01-09 22:14:47 - WARNING - ALB already exists: alb-for-gs-project-425969896.ap-northeast-2.elb.amazonaws.com
+2026-01-09 22:14:47 - INFO - ALB created...
+2026-01-09 22:14:47 - INFO - [7/10] Creating CloudFront distribution (ALB + S3 hybrid)
+2026-01-09 22:14:48 - WARNING - CloudFront distribution already exists: ddk4rljjog0z6.cloudfront.net
+2026-01-09 22:14:48 - INFO - CloudFront distribution created...
+2026-01-09 22:14:48 - INFO - [8/10] Creating EC2 instance
+2026-01-09 22:14:49 - WARNING - EC2 instance already exists: i-0343f3506598029e4
+2026-01-09 22:14:49 - INFO - EC2 instance created...
+2026-01-09 22:14:49 - INFO - [9/10] Creating ALB target group and listener
+2026-01-09 22:14:49 - WARNING -   Target group already exists: arn:aws:elasticloadbalancing:ap-northeast-2:262976740991:targetgroup/TG-for-gs-project/c21eb59fbeabb7dd
+2026-01-09 22:14:49 - WARNING -   EC2 instance i-0343f3506598029e4 is already registered in target group
+2026-01-09 22:14:49 - WARNING -   Listener already exists on port 80: arn:aws:elasticloadbalancing:ap-northeast-2:262976740991:listener/app/alb-for-gs-project/1222e4b13f7cbf78/a78b5bfb35a4ffd8
+2026-01-09 22:14:49 - WARNING -   Rule with Priority 10 for custom header already exists: arn:aws:elasticloadbalancing:ap-northeast-2:262976740991:listener-rule/app/alb-for-gs-project/1222e4b13f7cbf78/a78b5bfb35a4ffd8/505d6f17c7be3ce5
+2026-01-09 22:14:49 - INFO - ✓ ALB target group and listener created
+2026-01-09 22:14:49 - INFO -   Target group: arn:aws:elasticloadbalancing:ap-northeast-2:262976740991:targetgroup/TG-for-gs-project/c21eb59fbeabb7dd
+2026-01-09 22:14:49 - INFO -   Listener: arn:aws:elasticloadbalancing:ap-northeast-2:262976740991:listener/app/alb-for-gs-project/1222e4b13f7cbf78/a78b5bfb35a4ffd8
+2026-01-09 22:14:49 - INFO - ALB target group and listener created...
+2026-01-09 22:14:49 - INFO - Checking if application is ready: ddk4rljjog0z6.cloudfront.net
+2026-01-09 22:14:49 - INFO - [10/10] Checking if application is ready at https://ddk4rljjog0z6.cloudfront.net
+2026-01-09 22:14:49 - INFO -   Maximum 120 attempts, 10 seconds between attempts (up to 20 minutes)
+2026-01-09 22:14:49 - INFO - ✓ Application is ready! Status code: 200
+2026-01-09 22:14:49 - INFO -   Total attempts: 1/120, elapsed time: 0.0 minutes
+2026-01-09 22:14:49 - INFO - 
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO - Infrastructure Deployment Completed Successfully!
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO - Summary:
+2026-01-09 22:14:49 - INFO -   S3 Bucket: storage-for-gs-project-262976740991-ap-northeast-2
+2026-01-09 22:14:49 - INFO -   VPC ID: vpc-06b8dd54b1b13789f
+2026-01-09 22:14:49 - INFO -   Public Subnets: subnet-0b89c7bf170789d18, subnet-081686bc1faa76ea1
+2026-01-09 22:14:49 - INFO -   Private Subnets: subnet-0c21242558074a0b9, subnet-007fe7edaec03c2be
+2026-01-09 22:14:49 - INFO -   ALB DNS: http://alb-for-gs-project-425969896.ap-northeast-2.elb.amazonaws.com/
+2026-01-09 22:14:49 - INFO -   CloudFront Domain: https://ddk4rljjog0z6.cloudfront.net
+2026-01-09 22:14:49 - INFO -   EC2 Instance ID: i-0343f3506598029e4 (deployed in private subnet)
+2026-01-09 22:14:49 - INFO -   OpenSearch Endpoint: https://d68pp9amaxz257kxwqf6.ap-northeast-2.aoss.amazonaws.com
+2026-01-09 22:14:49 - INFO -   Knowledge Base ID: KQHG3WOC8H
+2026-01-09 22:14:49 - INFO -   Knowledge Base Role: arn:aws:iam::262976740991:role/role-knowledge-base-for-gs-project-ap-northeast-2
+2026-01-09 22:14:49 - INFO - 
+2026-01-09 22:14:49 - INFO - Total deployment time: 0.21 minutes
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO - Note: CloudFront distribution may take 15-20 minutes to fully deploy
+2026-01-09 22:14:49 - INFO - Note: EC2 instance user data script will install and start the application
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO - OpenSearch Collection ARN: arn:aws:aoss:ap-northeast-2:262976740991:collection/d68pp9amaxz257kxwqf6
+2026-01-09 22:14:49 - INFO - OpenSearch Collection Endpoint: https://d68pp9amaxz257kxwqf6.ap-northeast-2.aoss.amazonaws.com
+2026-01-09 22:14:49 - INFO - ✓ Updated application/config.json
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO - 
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO -   IMPORTANT: CloudFront Domain Address
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO -  CloudFront URL: https://ddk4rljjog0z6.cloudfront.net
+2026-01-09 22:14:49 - INFO - 
+2026-01-09 22:14:49 - INFO - Note: CloudFront distribution and agent application on EC2 instance may take 15-20 minutes to fully deploy
+2026-01-09 22:14:49 - INFO -       Once deployed, you can access your application at the URL above
+2026-01-09 22:14:49 - INFO - ============================================================
+2026-01-09 22:14:49 - INFO - 

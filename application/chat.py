@@ -13,7 +13,7 @@ from PIL import Image
 from io import BytesIO
 import agentcore_memory
 
-model_name = "Claude 3.7 Sonnet"
+model_name = "Claude 4.5 Haiku"
 model_type = "claude"
 models = info.get_model_info(model_name)
 model_id = models[0]["model_id"]

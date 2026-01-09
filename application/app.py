@@ -50,10 +50,10 @@ with st.sidebar:
     st.info(mode_descriptions[mode][0])
 
     mcp_options = [
-        "RAG", "Notion", "Code Interpreter", "Long Term Memory"
+        "Knowledge Base", "Notion", "Code Interpreter", "Long Term Memory"
     ]
     mcp_selections = {}
-    default_selections = ["RAG"]
+    default_selections = ["Knowledge Base"]
 
     with st.expander("MCP 옵션 선택", expanded=True):  
         for option in mcp_options:
@@ -63,8 +63,24 @@ with st.sidebar:
     # model selection box
     modelName = st.selectbox(
         '🖊️ 사용 모델을 선택하세요',
-        ('Claude 4 Sonnet', 'Claude 3.7 Sonnet', 'Claude 3.5 Sonnet', 'Claude 3.0 Sonnet'), index=0
-    )    
+        (
+            "Claude 4.5 Haiku",
+            "Claude 4.5 Sonnet",
+            "Claude 4 Opus", 
+            "Claude 4 Sonnet", 
+            "Claude 3.7 Sonnet", 
+            "Claude 3.5 Sonnet", 
+            "Claude 3.0 Sonnet", 
+            "Claude 3.5 Haiku", 
+            "OpenAI OSS 120B",
+            "OpenAI OSS 20B",
+            "Nova 2 Lite",
+            "Nova Premier", 
+            "Nova Pro", 
+            "Nova Lite", 
+            "Nova Micro",            
+        ), index=0
+    )  
 
     # debug checkbox
     select_debugMode = st.checkbox('Debug Mode', value=True)

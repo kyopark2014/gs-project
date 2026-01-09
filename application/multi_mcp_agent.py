@@ -117,7 +117,7 @@ def initialize_agent():
     """Initialize the global agent with MCP client"""
     # MCP server mapping
     mcp_server_mapping = {
-        "RAG": "knowledge_base",
+        "Knowledge Base": "knowledge_base",
         "Notion": "notionApi", 
         "Code Interpreter": "repl_coder",
         "Long Term Memory": "long_term_memory"
@@ -140,7 +140,7 @@ def initialize_agent():
             active_clients.append(client)
             
             # Assign to each client variable
-            if server_name == "RAG":
+            if server_name == "Knowledge Base":
                 knowledge_base_client = client
             elif server_name == "Notion":
                 notion_client = client
@@ -342,7 +342,7 @@ async def show_streams(agent_stream, containers):
             continue
         
     # get reference
-    # result += get_reference(references)
+    result += get_reference(references)
     
     return result, image_url
 
