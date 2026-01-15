@@ -281,97 +281,138 @@ Code Interpreter MCP를 이용해 아래와 같이 그래프를 그릴 수 있�
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/f3fad29e-92d2-41e4-9888-651085bbfc17" />
 
 
-## Production Deployment
+## 배포하기
 
-### AgentCore Deployment
+### EC2로 배포하기
 
-#### 배포 준비
+AWS console의 EC2로 접속하여 [Launch an instance](https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#Instances:)를 선택합니다. [Launch instance]를 선택한 후에 적당한 Name을 입력합니다. (예: es) key pair은 "Proceed without key pair"을 선택하고 넘어갑니다. 
 
-아래의 명령어로 gs_agent 폴더로 이동한 후에 agent 동작에 필요한 policy를 생성합니다.
+<img width="700" alt="ec2이름입력" src="https://github.com/user-attachments/assets/c551f4f3-186d-4256-8a7e-55b1a0a71a01" />
 
-```text
-cd runtime/gs_agent 
-python create_iam_policies.py
-```
 
-이후 아래와 같이 agent 인증에 필요한 token을 생성합니다. 생성된 token은 secret에 보관되고 agent 호출시 사용됩니다.
+Instance가 준비되면 [Connet] - [EC2 Instance Connect]를 선택하여 아래처럼 접속합니다. 
 
-```text
-python create_bearer_token.py
-```
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/e8a72859-4ac7-46af-b7ae-8546ea19e7a6" />
 
-[mcp.json.sample.json](./runtime/gs_agent/mcp.json.sample.json)을 아래와 같이 이름을 변경하고 파일을 열어서 내용을 업데이트합니다.
+이후 아래와 같이 python, pip, git, boto3를 설치합니다.
 
 ```text
-mv mcp.json.sample.json mcp.json
+sudo yum install python3 python3-pip git docker -y
+pip install boto3
 ```
 
-#### Knowledge Base 정보 업데이트
+Workshop의 경우에 아래 형태로 된 Credential을 복사하여 EC2 터미널에 입력합니다.
 
-config.json 파일을 열어서 아래와 같이 knowledge_base_id를 추가합니다.
+<img width="700" alt="credential" src="https://github.com/user-attachments/assets/261a24c4-8a02-46cb-892a-02fb4eec4551" />
 
-```java
-"knowledge_base_id":"AT1MDKAVWG"
+아래와 같이 git source를 가져옵니다.
+
+```python
+git clone https://github.com/kyopark2014/es-us-project
 ```
 
-#### Docker 이미지 준비
+아래와 같이 installer.py를 이용해 설치를 시작합니다.
 
-아래와 같이 [build-docker.sh](./runtime/gs_agent/build-docker.sh)를 이용해 docker를 빌드합니다. 이때 PC에 Docker Desktop이 설치되어 있어야 합니다.
+```python
+cd es-us-project && python3 installer.py
+```
+
+API 구현에 필요한 credential은 secret으로 관리합니다. 따라서 설치시 필요한 credential 입력이 필요한데 아래와 같은 방식을 활용하여 미리 credential을 준비합니다. 
+
+- 일반 인터넷 검색: [Tavily Search](https://app.tavily.com/sign-in)에 접속하여 가입 후 API Key를 발급합니다. 이것은 tvly-로 시작합니다.  
+- 날씨 검색: [openweathermap](https://home.openweathermap.org/api_keys)에 접속하여 API Key를 발급합니다. 이때 price plan은 "Free"를 선택합니다.
+
+설치가 완료되면 아래와 같은 CloudFront로 접속하여 동작을 확인합니다. 
+
+<img width="500" alt="cloudfront_address" src="https://github.com/user-attachments/assets/7ab1a699-eefb-4b55-b214-23cbeeeb7249" />
+
+접속한 후 아래와 같이 Agent를 선택한 후에 적절한 MCP tool을 선택하여 원하는 작업을 수행합니다.
+
+<img width="750" alt="image" src="https://github.com/user-attachments/assets/30ea945a-e896-438f-9f16-347f24c2f330" />
+
+인프라가 더이상 필요없을 때에는 uninstaller.py를 이용해 제거합니다.
 
 ```text
-./build-docker.sh
+python uninstaller.py
 ```
 
-Local에서 테스트 하기 위하여 아래와 같이 실행합니다.
+
+### 배포된 Application 업데이트 하기
+
+AWS console의 EC2로 접속하여 [Launch an instance](https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#Instances:)를 선택하여 아래와 같이 아래와 같이 "app-for-es-us"라는 이름을 가지는 instance id를 선택합니다.
+
+<img width="750" alt="image" src="https://github.com/user-attachments/assets/7d6d756a-03ba-4422-9413-9e4b6d3bc1da" />
+
+[connect]를 선택한 후에 Session Manager를 선택하여 접속합니다. 
+
+<img width="700" alt="image" src="https://github.com/user-attachments/assets/d1119cd6-08fb-4d3e-b1c2-77f2d7c1216a" />
+
+이후 아래와 같이 업데이트한 후에 다시 브라우저에서 확인합니다.
 
 ```text
-./run-docker.sh
+cd ~/es-us-project/ && sudo ./update.sh
 ```
 
+### 실행 로그 확인
 
-#### Local 동작 시험
+[EC2 console](https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#Instances:)에서 "app-for-es-us"라는 이름을 가지는 instance id를 선택 한 후에, EC2의 Session Manager를 이용해 접속합니다. 
 
-별도 터미널을 열어서 아래의 명령어로 실행 결과를 확인합니다.
+먼저 아래와 같이 현재 docker container ID를 확인합니다.
 
 ```text
-docker logs gs_gs_agent-container -f
+sudo docker ps
 ```
 
-
-아래와 같이 local에서 동작을 테스트 할 수 있습니다.
+이후 아래와 같이 container ID를 이용해 로그를 확인합니다.
 
 ```text
-python test_runtime_local.py
+sudo docker logs [container ID]
 ```
 
-#### ECR 배포
+실제 실행시 결과는 아래와 같습니다.
 
-local에서 동작에 문제가 없을 경우에 아래와 같이 ECR에 push 합니다. 
+<img width="600" src="https://github.com/user-attachments/assets/2ca72116-0077-48a0-94be-3ab15334e4dd" />
+
+### Local에서 실행하기
+
+AWS 환경을 잘 활용하기 위해서는 [AWS CLI를 설치](https://docs.aws.amazon.com/ko_kr/cli/v1/userguide/cli-chap-install.html)하여야 합니다. EC2에서 배포하는 경우에는 별도로 설치가 필요하지 않습니다. Local에 설치시는 아래 명령어를 참조합니다.
 
 ```text
-./push-to-ecr.sh
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
+unzip awscliv2.zip
+sudo ./aws/install
 ```
 
-#### AgentCore 배포
-
-아래 명령어로 AgentCore에 배포합니다.
+AWS credential을 아래와 같이 AWS CLI를 이용해 등록합니다.
 
 ```text
-python create_agent_runtime.py
+aws configure
 ```
 
-배포가 성공하면 아래와 같이 AgentCore Runtime에서 확인할 수 있습니다.
+설치하다가 발생하는 각종 문제는 [Kiro-cli](https://aws.amazon.com/ko/blogs/korea/kiro-general-availability/)를 이용해 빠르게 수정합니다. 아래와 같이 설치할 수 있지만, Windows에서는 [Kiro 설치](https://kiro.dev/downloads/)에서 다운로드 설치합니다. 실행시는 셀에서 "kiro-cli"라고 입력합니다. 
 
-<img width="729" height="158" alt="image" src="https://github.com/user-attachments/assets/0f4fdf7c-1afe-4ada-bcef-cfef1adc6d60" />
+```python
+curl -fsSL https://cli.kiro.dev/install | bash
+```
 
-#### AgentCore Runtime 동작확인
-
-아래와 같이 AgentCore Runtime에 배포된 agent를 테스트 할 수 있습니다.
+venv로 환경을 구성하면 편리하게 패키지를 관리합니다. 아래와 같이 환경을 설정합니다.
 
 ```text
-python test_runtime_remote.py
+python -m venv .venv
+source .venv/bin/activate
 ```
 
+이후 다운로드 받은 github 폴더로 이동한 후에 아래와 같이 필요한 패키지를 추가로 설치 합니다.
+
+```text
+pip install -r requirements.txt
+```
+
+이후 아래와 같은 명령어로 streamlit을 실행합니다. 
+
+```text
+streamlit run application/app.py
+```
 
 
 
